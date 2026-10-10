@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="uk"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Замовлення БД для зоопарку</title>
+<style>
+:root{--bg:#f6f7f2;--pn:#fff;--tx:#1f2a24;--mu:#6b776f;--ac:#2f7d4f;--ln:#d9ded6;--bad:#c0392b;--hd:#e3f1e7;--bd:#fdeceb;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171c19;--pn:#222a25;--tx:#e8eee9;--mu:#9aa89f;--ac:#5cc283;--ln:#38443c;--bad:#ff7b6b;--hd:#2c3b31;--bd:#4a2a27}}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+.w{max-width:1150px;margin:auto;padding:12px}
+h1{font-size:19px;margin:0 0 6px}
+details{background:var(--hd);border-radius:10px;padding:8px 12px;margin-bottom:10px;font-size:14px}summary{cursor:pointer;font-weight:600}
+.steps{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.st{flex:1;min-width:110px;text-align:center;padding:6px;border-radius:8px;border:1px solid var(--ln);background:var(--pn);color:var(--mu);font-size:14px}
+.st.on{background:var(--ac);color:#fff;border-color:var(--ac)}.st.done{color:var(--ac);border-color:var(--ac)}
+#ins{background:var(--pn);border:1px solid var(--ln);border-radius:10px;padding:10px 12px;margin-bottom:10px}
+button,select,input{font:inherit;color:var(--tx)}
+button{background:var(--ac);color:#fff;border:0;border-radius:8px;padding:8px 14px;cursor:pointer}
+button.g{background:transparent;color:var(--mu);border:1px solid var(--ln);padding:3px 8px}
+input,select{background:var(--pn);border:1px solid var(--ln);border-radius:6px;padding:4px 6px;min-width:0}
+.bar{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;align-items:start}
+.two{display:grid;grid-template-columns:240px 1fr;gap:10px}@media(max-width:700px){.two{grid-template-columns:1fr}}
+.card2{background:var(--pn);border:2px solid var(--ac);border-radius:10px;padding-bottom:3px}.pk{font-weight:700}.fk{font-style:italic}var{font-style:normal}
+.hd2{background:var(--hd);padding:6px 8px;border-radius:8px 8px 0 0;font-weight:700;display:flex;gap:6px;align-items:center}
+.hd2 input{flex:1;font-weight:700}
+.pl{background:var(--pn);border:1px dashed var(--ln);border-radius:10px;padding:8px;min-height:80px}
+.chip{display:inline-flex;gap:6px;align-items:center;background:var(--hd);border:1px solid var(--ac);border-radius:14px;padding:3px 10px;margin:2px;cursor:grab;font-size:14px;user-select:none}
+.chip.sel{background:var(--ac);color:#fff}.chip.bad,.fr.bad{background:var(--bd);border-color:var(--bad)}
+.chip b{cursor:pointer;color:var(--mu)}
+.hint{color:var(--mu);font-size:12px;text-align:center;padding:4px}
+.fr{display:flex;gap:6px;align-items:center;padding:4px 8px;border-radius:6px}.fr span{flex:1}
+.fr i{color:var(--mu);font-size:12px}
+#cv{position:relative;min-height:480px;overflow:auto;background:var(--pn);border:1px dashed var(--ln);border-radius:12px}
+#ln{position:absolute;left:0;top:0;width:2000px;height:1400px}
+#ln path{stroke:var(--ac);stroke-width:2;fill:none;cursor:pointer}#ln path:hover{stroke:var(--bad)}
+#ln text{fill:var(--tx);font-size:13px;font-weight:700}
+.card{position:absolute;z-index:1;width:290px;background:var(--pn);border:2px solid var(--ac);border-radius:10px;box-shadow:0 2px 8px #0002}
+.card .hd2 .h{cursor:grab;touch-action:none}
+.an{width:16px;height:16px;border-radius:50%;border:2px solid var(--ac);background:var(--pn);padding:0;flex:none}.an.s{background:var(--ac)}
+.ft{display:flex;gap:8px;align-items:center;margin-top:12px}#msg{flex:1;font-size:14px;color:var(--bad)}
+.ck{display:flex;gap:6px;margin:3px 0}.ok{color:var(--ac)}.no{color:var(--bad)}
+#res{background:var(--pn);border:1px solid var(--ln);border-radius:10px;padding:10px;margin-top:10px}#res:empty{display:none}
+.bt{display:inline-block;background:var(--ac);color:#fff;border-radius:8px;padding:8px 14px;text-decoration:none}#pv{max-width:100%;border:1px solid var(--ln);border-radius:8px;margin-top:8px;background:#fff}
+</style></head><body><div class="w">
+<h1>🦁 Замовлення для компанії «ДатаБаза Плюс» <button class="g" id="lv" style="float:right">⟲ Рівні</button></h1>
+<details open><summary>Лист від замовника</summary>Доброго дня! Ми — зоопарк «Дикий світ». Хочемо замінити паперові журнали базою даних. Нам потрібно зберігати інформацію про тварин, які є у зоопарку, їхні види, вольєри, в яких проживає кожна тварина, та працівників, що обслуговують ці вольєри.<br><b>Уточнення:</b> кожна тварина належить одному виду й живе в одному вольєрі, а працівник може доглядати за різними вольєрами. Чекаємо вашу схему!</details>
+<div class="steps" id="steps"></div><div id="ins"></div><div id="main"></div>
+<div class="ft"><button class="g" id="bk">← Назад</button><span id="msg"></span><button id="nx">Далі →</button></div>
+<div id="res"></div></div>
+<script>
+const TYPES=["Текстовий","Ціле число","Дійсне число","Дата","Логічний","Лічильник","Зв'язок"],TA=n=>/тварин/.test(n)&&!/вид|годув/.test(n),SP=n=>/вид/.test(n),EN=n=>/вольєр|вольер/.test(n),ST=n=>/працівн|доглядач|співроб/.test(n);
+const S=[["код_тварини",TA,["Лічильник"],1],["кличка",TA,["Текстовий"]],["дата_народження",TA,["Дата"]],["стать",TA,["Текстовий","Логічний"]],["вид_тварини",TA,["Зв'язок"]],["вольєр_тварини",TA,["Зв'язок"]],
+["код_виду",SP,["Лічильник"],1],["назва_виду",SP,["Текстовий"]],["чим_живиться",n=>SP(n)||TA(n),["Текстовий"]],
+["код_вольєра",EN,["Лічильник"],1],["номер_вольєра",EN,["Ціле число"]],["площа_м2",EN,["Дійсне число"]],["доглядач_вольєра",EN,["Зв'язок"]],
+["код_працівника",ST,["Лічильник"],1],["ПІБ",ST,["Текстовий"]],["посада",ST,["Текстовий"]],["телефон",ST,["Текстовий"]]];const DEC=["ціна_квитка","кількість_відвідувачів","розклад_шоу","магазин_сувенірів","вартість_корму","марка_автомобіля","кількість_місць_у_кафе","дата_відкриття_зоопарку","ім'я_директора"];
+let FL=[],lvl=0,STG=[],RES=0;
+const ME={sn:"",fn:"",cl:""},LV=["","Базовий","Достатній","Поглиблений"],PT=[0,8,10,12];let SUM=null,LOG=[],wl="",ERR=0,cnt=0,st=1,T=[],R=[],sel=null,chip=null,show=0,uid=100;
+const $=s=>document.querySelector(s),main=$("#main"),esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const say=m=>$("#msg").textContent=m,tf=t=>FL.filter(f=>f.table==t.id),fid=id=>FL.find(f=>f.id==id),tn=t=>t.name.toLowerCase();
+const okPlace=f=>{const t=T.find(t=>t.id==f.table);return !!(t&&f.home&&f.home(tn(t)))},nm=f=>`<var class="${lvl==3?"":f.pk?"pk":f.types[0]=="Зв'язок"?"fk":""}">${f.name}</var>`;
+const SN={tables:"Таблиці",fields:"Поля",types:"Типи даних",rel:"Зв'язки",extra:"Додаткове завдання"},K=()=>STG[st-1],ONE=new Set(["код_виду>вид_тварини","код_вольєра>вольєр_тварини"]);
+const INS0=k=>"<b>Етап "+st+". "+{tables:lvl==2?"Назвіть таблиці":"Створіть таблиці",fields:lvl==1?"Додайте поля":"Розподіліть поля",types:"Оберіть типи даних",rel:"Встановіть зв'язки"}[k]+".</b> "+{
+tables:lvl==2?"Перед вами 4 порожні заготовки. Подумайте, про які об'єкти (сутності) потрібно зберігати дані, і дайте кожній таблиці назву.":"Подумайте, про які об'єкти (сутності) потрібно зберігати дані. Для кожного створіть окрему таблицю й дайте їй назву.",
+fields:lvl==1?"Таблиці та їхні ключові поля вже готові. Перетягніть кожне поле зі списку в таблицю, якій воно належить (на телефоні — торкніться поля, потім таблиці). <b>Жирним</b> позначено ключові поля, <i>курсивом</i> — поля для зв'язків між таблицями.":"Перетягніть кожне поле з лівого списку в таблицю, якій воно належить (на телефоні — торкніться поля, потім таблиці). Якщо поле нікуди не підходить — поверніться до етапу 1 і створіть чи перейменуйте таблицю. "+(lvl==3?"":"<b>Жирним</b> виділено ключові поля, <i>курсивом</i> — поля для зв'язків між таблицями. ")+"Деякі поля можуть виявитися зайвими для цього замовлення.",
+types:lvl==1?"Для кожного поля виберіть тип даних. Ключові поля вже позначені. Для полів, що з'єднують таблиці, є тип «Зв'язок».":"Для кожного поля виберіть тип і позначте 🔑 ключове поле (унікальний код запису) в кожній таблиці. Для полів, що з'єднують таблиці, є тип «Зв'язок».",
+rel:"Клацніть кружечок біля ключового поля, потім біля поля-посилання в іншій таблиці. "+(lvl==3?"Тип кожного зв'язку (1 : 1 або 1 : ∞) оберіть у списку під схемою відповідно до умов замовника. ":"Тип зв'язку (1 : 1 або 1 : ∞) програма визначить автоматично. ")+"Лінію можна видалити кліком або кнопкою ✕. Таблиці можна переміщувати за ⠿. Коли все готово — натисніть «Здати проєкт»."}[k];
+const GV=n=>/годув|корм|облік/.test(n),MSG='<div class="pn2" style="margin:0 0 6px">✉ <b>Нове повідомлення від замовника:</b> «Дякуємо! Ми також хочемо вести облік годування: яку тварину, коли, яким кормом і скільки кг нагодував конкретний працівник. Доповніть схему!»</div>';
+const INS=k=>lvl==3&&st>4?MSG+"<b>Етап 5. Додаткове завдання.</b> Додайте таблицю для обліку годування, розмістіть у ній нові поля, оберіть типи й ключ. Нижче з'єднайте таблиці зв'язками та оберіть тип кожного зв'язку. Потім натисніть «Здати проєкт».":INS0(k);
+const baseOK=()=>[["код_виду","вид_тварини",1],["код_вольєра","вольєр_тварини",1],["код_працівника","доглядач_вольєра",0]].every(([a,b,o])=>R.some(r=>fid(r.from).name==a&&fid(r.to).name==b&&!!r.one==!!o));
+function addExtra(){if(FL.some(f=>f.extra))return;const n=Math.max(...FL.map(f=>f.id));
+ [["код_годування",["Лічильник"],1],["дата_годування",["Дата"]],["назва_корму",["Текстовий"]],["маса_корму_кг",["Дійсне число"]],["тварина_годування",["Зв'язок"]],["працівник_годування",["Зв'язок"]]].forEach((x,i)=>FL.push({id:n+1+i,name:x[0],home:GV,types:x[1],pk:!!x[2],table:null,type:"",key:false,extra:1}))}
+const MENU=()=>`<div class="pn2" style="margin:0 0 10px"><b>Дані учня</b><div class="bar" style="margin:6px 0 0"><input data-me="sn" placeholder="Прізвище" value="${esc(ME.sn)}"><input data-me="fn" placeholder="Ім'я" value="${esc(ME.fn)}"><input data-me="cl" placeholder="Клас (напр. 9-А)" size="12" value="${esc(ME.cl)}"></div><div id="mm" style="color:var(--bad);font-size:14px;margin-top:4px"></div></div><div class="grid">${[[1,"🟢 Базовий","3 етапи","Таблиці з назвами та ключовими полями вже готові. Додайте потрібні поля (без зайвих), оберіть типи й встановіть зв'язки — тип зв'язку програма визначить сама."],[2,"🟡 Достатній","4 етапи","4 порожні заготовки таблиць: назвіть їх, розподіліть поля (є зайві), оберіть типи й встановіть зв'язки — тип зв'язку визначається автоматично."],[3,"🔴 Поглиблений","5 етапів","Усе самостійно й без підказок у шрифті: створіть таблиці, розподіліть поля (багато зайвих), оберіть типи й самі визначте тип кожного зв'язку. Після основної схеми — додаткове завдання: нова вимога замовника про облік годування."]].map(([l,t,e,d])=>`<div class="card2" style="padding:10px"><b>${t}</b> <i>(${e})</i><div style="margin:6px 0"><b style="background:var(--hd);border-radius:12px;padding:2px 10px">${PT[l]} балів</b></div><p>${d}</p><button data-a="lvl" data-l="${l}">Обрати</button></div>`).join("")}</div>`;
+function start(l){RES=0;lvl=l;STG=l==1?["fields","types","rel"]:l==2?["tables","fields","types","rel"]:["tables","fields","types","rel","extra"];uid=100;ERR=0;LOG=[];R=[];sel=chip=null;show=0;st=1;$("#res").innerHTML="";say("");
+ FL=S.filter(x=>l>1||!/^(код_виду|вид_тварини)$/.test(x[0])).map(x=>l==1&&x[0]=="назва_виду"?[x[0],TA,x[2]]:x).concat(l>1?DEC.slice(0,l==2?4:9).map(n=>[n,null,[]]):[]).map((x,i)=>({id:i+1,name:x[0],home:x[1],types:x[2],pk:!!x[3],table:null,type:"",key:false})).sort(()=>Math.random()-.5);
+ T=l==1?["Тварини","Вольєри","Працівники"].map(n=>({id:uid++,name:n})):l==2?[1,2,3,4].map(()=>({id:uid++,name:""})):[];
+ if(l==1)FL.filter(f=>f.pk).forEach(f=>{f.table=T.find(t=>f.home(tn(t))).id;f.key=true;f.type="Лічильник"});
+ render()}
+function render(){const rs=RES&&lvl;
+ $("#steps").style.display=lvl&&!rs?"":"none";$(".ft").style.display=$("#lv").style.display=lvl?"":"none";main.style.display=$("#ins").style.display=rs?"none":"";$("#res").style.display=rs?"":"none";$("#nx").style.display=rs?"none":"";
+ if(!lvl){$("#ins").innerHTML="<b>Оберіть рівень складності</b>";main.innerHTML=MENU();return}
+ $("#steps").innerHTML=STG.map((k,i)=>`<div class="st ${i+1==st?"on":i+1<st?"done":""}">${i+1}. ${i>3?"＋ ":""}${SN[k]}</div>`).join("");
+ $("#ins").innerHTML=INS(K());$("#bk").style.visibility=st>1||rs?"visible":"hidden";$("#bk").textContent=rs?"← Повернутися до схеми":"← Назад";
+ $("#nx").textContent=st==STG.length?"📨 Здати проєкт":"Далі →";
+ const pill=(f,x)=>`<span class="chip${chip==f.id?" sel":""}${show&&x&&!okPlace(f)?" bad":""}" draggable="${!(lvl==1&&f.pk)}" data-a="chip" data-f="${f.id}">${nm(f)}${x==1?'<b data-a="un">✕</b>':""}</span>`;
+ if(K()=="tables")main.innerHTML=`${lvl==2?"":'<div class="bar"><input id="tnew" placeholder="Назва таблиці" maxlength="30"><button data-a="addT">＋ Додати таблицю</button></div>'}<div class="grid">${T.map(t=>`<div class="card2"><div class="hd2"><input class="tname" placeholder="Назва таблиці" data-t="${t.id}" value="${esc(t.name)}">${lvl==2?"":`<button class="g" data-a="delT" data-t="${t.id}">✕</button>`}</div></div>`).join("")}</div>${T.length?"":'<div class="hint">Поки що немає таблиць</div>'}`;
+ if(K()=="fields")main.innerHTML=`<div class="two"><div><div class="pl" data-a="pool"><b>Поля</b><br>${FL.filter(f=>!f.table).map(f=>pill(f)).join("")||'<div class="hint">Усі поля розподілено ✔</div>'}</div>${lvl==1?"":'<button class="g" style="margin-top:8px" data-a="to1">← Змінити таблиці</button>'}</div><div class="grid">${T.map(t=>`<div class="card2" data-a="zone" data-t="${t.id}"><div class="hd2">${esc(t.name)}</div><div style="padding:4px">${tf(t).map(f=>pill(f,lvl==1&&f.pk?2:1)).join("")}</div>${tf(t).length?"":'<div class="hint">Перетягніть поля сюди</div>'}</div>`).join("")}</div></div>`;
+ if(K()=="types")main.innerHTML=`<div class="grid">${T.map(t=>`<div class="card2"><div class="hd2">${esc(t.name)}</div>${tf(t).map(f=>{const bad=show&&(!f.types.includes(f.type)||f.key!=f.pk);return`<div class="fr${bad?" bad":""}"><span>${nm(f)}</span><select data-f="${f.id}" data-k="type"><option value="">— тип —</option>${TYPES.map(x=>`<option${x==f.type?" selected":""}>${x}</option>`).join("")}</select>${lvl==1?"":`<label title="Ключове поле"><input type="checkbox" data-f="${f.id}" data-k="key"${f.key?" checked":""}>🔑</label>`}</div>`}).join("")}</div>`).join("")}</div>`;
+ const EXH=()=>{const NT=T.filter(t=>t.extra),pf=FL.filter(f=>f.extra&&!f.table);
+ return `<div class="bar"><input id="tnew" placeholder="Назва нової таблиці" maxlength="30"><button data-a="addT">＋ Додати таблицю</button></div><div class="two"><div class="pl" data-a="pool"><b>Нові поля</b><br>${pf.map(f=>pill(f)).join("")||'<div class="hint">Усі нові поля розподілено ✔</div>'}</div><div class="grid">${NT.map(t=>`<div class="card2" data-a="zone" data-t="${t.id}"><div class="hd2"><input class="tname" placeholder="Назва таблиці" data-t="${t.id}" value="${esc(t.name)}"><button class="g" data-a="delT" data-t="${t.id}">✕</button></div>${tf(t).map(f=>`<div class="fr${show&&(!okPlace(f)||!f.types.includes(f.type)||f.key!=f.pk)?" bad":""}" data-f="${f.id}"><span>${nm(f)}</span><select data-f="${f.id}" data-k="type"><option value="">— тип —</option>${TYPES.map(x=>`<option${x==f.type?" selected":""}>${x}</option>`).join("")}</select><label title="Ключове поле"><input type="checkbox" data-f="${f.id}" data-k="key"${f.key?" checked":""}>🔑</label><button class="g" data-a="un">✕</button></div>`).join("")}${tf(t).length?"":'<div class="hint">Перетягніть нові поля сюди</div>'}</div>`).join("")||'<div class="hint">Додайте таблицю для нових даних</div>'}</div></div><h3 style="margin:12px 0 6px">Зв'язки між таблицями</h3>`};
+ if(K()=="rel"||K()=="extra"){T.forEach((t,i)=>{if(t.x==null){t.x=20+(i%3)*310;t.y=20+Math.floor(i/3)*250}});
+  const RH=`<div id="cv"><svg id="ln"></svg>${T.map(t=>`<div class="card" data-t="${t.id}" style="left:${t.x}px;top:${t.y}px"><div class="hd2"><span class="h">⠿</span>${esc(t.name)}</div>${tf(t).map(f=>`<div class="fr"><button class="an${sel==f.id?" s":""}" data-anc="${f.id}" title="Створити зв'язок"></button><span>${f.key?"🔑 ":""}${nm(f)}</span><i>${f.type}</i></div>`).join("")}</div>`).join("")}</div>${R.length?'<div class="pn2"><b>Типи зв\'язків</b>'+R.map((r,i)=>`<div class="fr"><span>${fid(r.from).name} → ${fid(r.to).name}</span>${lvl==3?`<select data-ri="${i}"><option value="1"${r.one?" selected":""}>1 : 1</option><option value="0"${r.one?"":" selected"}>1 : ∞</option></select>`:`<b>${r.one?"1 : 1":"1 : ∞"}</b>`}<button class="g" data-a="delR" data-ri="${i}">✕</button></div>`).join("")+'</div>':""}`;main.innerHTML=K()=="rel"?RH:EXH()+RH;lines()}}
+function lines(){const cv=$("#cv");if(!cv)return;const c=cv.getBoundingClientRect();let h="";
+ for(const r of R){const a=cv.querySelector(`[data-anc="${r.from}"]`),b=cv.querySelector(`[data-anc="${r.to}"]`);if(!a||!b)continue;
+  const A=a.getBoundingClientRect(),B=b.getBoundingClientRect(),ea=a.closest(".card").getBoundingClientRect(),eb=b.closest(".card").getBoundingClientRect();
+  const s=ea.left<eb.left?1:-1,ox=c.left-cv.scrollLeft,oy=c.top-cv.scrollTop;
+  const X1=(s>0?ea.right:ea.left)-ox,X2=(s>0?eb.left:eb.right)-ox,y1=A.top+8-oy,y2=B.top+8-oy,k=Math.max(40,Math.abs(X2-X1)/2);
+  h+=`<path data-r="${r.from}-${r.to}" d="M${X1} ${y1}C${X1+s*k} ${y1} ${X2-s*k} ${y2} ${X2} ${y2}"/><text x="${X1+s*12-4}" y="${y1-6}">1</text><text x="${X2-s*14-4}" y="${y2-6}">${r.one?"1":"∞"}</text>`}
+ $("#ln").innerHTML=h}
+const place=(fi,tid)=>{if(lvl==1&&fid(fi).pk)return;R=R.filter(r=>r.from!=fi&&r.to!=fi);const f=fid(fi);f.table=tid;if(!tid){f.type="";f.key=false}chip=null;show=0;render()};
+main.addEventListener("click",e=>{const g=e.target,a=g.dataset.a;
+ if(a=="lvl"){if(!ME.sn.trim()||!ME.fn.trim()||!ME.cl.trim()){$("#mm").textContent="Спершу заповніть прізвище, ім'я та клас.";return}start(+g.dataset.l);return}
+ if(g.closest("#ln")&&g.dataset.r){R=R.filter(r=>r.from+"-"+r.to!=g.dataset.r);render();return}
+ if(a=="delR"){R.splice(+g.dataset.ri,1);render();return}
+ if(a=="addT"){const n=$("#tnew").value.trim();if(!n){say("Введіть назву таблиці.");return}T.push({id:uid++,name:n,extra:K()=="extra"});say("");render();$("#tnew").focus()}
+ else if(a=="delT"){const id=+g.dataset.t;const ids=FL.filter(f=>f.table==id).map(f=>f.id);FL.filter(f=>f.table==id).forEach(f=>{f.table=null;f.type="";f.key=false});T=T.filter(t=>t.id!=id);R=R.filter(r=>!ids.includes(r.from)&&!ids.includes(r.to));render()}
+ else if(a=="un"){place(+g.parentNode.dataset.f,null);e.stopPropagation()}
+ else if(g.dataset.a=="chip"||g.closest("[data-a=chip]")){const id=+g.closest("[data-a=chip]").dataset.f;chip=chip==id?null:id;render()}
+ else if(a=="to1"){st=1;say("");render()}
+ else if(g.closest("[data-a=zone]")&&chip)place(chip,+g.closest("[data-a=zone]").dataset.t);
+ else if(g.closest("[data-a=pool]")&&chip)place(chip,null);
+ else if(a==undefined&&g.dataset.anc){const id=+g.dataset.anc;
+  if(!sel){sel=id;say("");render();return}if(sel==id){sel=null;render();return}
+  const A=fid(sel),B=fid(id);sel=null;
+  if(A.table==B.table){ERR++;LOG.push("Спроба з'єднати поля однієї таблиці");say("Зв'язок потрібен між різними таблицями.")}
+  else if(!A.key&&!B.key){ERR++;LOG.push("Спроба з'єднати поля без ключового ("+A.name+" — "+B.name+")");say("Одне з полів має бути ключовим (сторона «один»).")}
+  else{const from=A.key?A.id:B.id,to=A.key?B.id:A.id;
+   if(R.some(r=>r.from==from&&r.to==to||r.from==to&&r.to==from))say("Такий зв'язок уже є.");else{R.push({from,to,one:lvl<3&&ONE.has(fid(from).name+">"+fid(to).name)});say("")}}
+  render()}});
+main.addEventListener("input",e=>{if(e.target.dataset.me){ME[e.target.dataset.me]=e.target.value;return}if(e.target.classList.contains("tname"))T.find(t=>t.id==e.target.dataset.t).name=e.target.value});
+main.addEventListener("change",e=>{const g=e.target;if(g.dataset.ri){R[+g.dataset.ri].one=g.value=="1";lines();return}const f=g.dataset.f&&fid(g.dataset.f);if(!f)return;show=0;if(g.dataset.k=="type")f.type=g.value;else f.key=g.checked;if(K()=="extra")render()});
+main.addEventListener("dragstart",e=>{const c=e.target.closest("[data-a=chip]");if(c){chip=+c.dataset.f;e.dataTransfer.setData("text","x")}});
+main.addEventListener("dragover",e=>{if(e.target.closest("[data-a=zone],[data-a=pool]"))e.preventDefault()});
+main.addEventListener("drop",e=>{const z=e.target.closest("[data-a=zone],[data-a=pool]");if(z&&chip){e.preventDefault();place(chip,z.dataset.t?+z.dataset.t:null)}});
+let dr=null;
+main.addEventListener("pointerdown",e=>{if(!e.target.classList.contains("h"))return;const c=e.target.closest(".card");dr={t:T.find(t=>t.id==c.dataset.t),c,dx:e.clientX-c.offsetLeft,dy:e.clientY-c.offsetTop};e.target.setPointerCapture(e.pointerId)});
+main.addEventListener("pointermove",e=>{if(!dr)return;dr.t.x=Math.max(0,e.clientX-dr.dx);dr.t.y=Math.max(0,e.clientY-dr.dy);dr.c.style.left=dr.t.x+"px";dr.c.style.top=dr.t.y+"px";lines()});
+main.addEventListener("pointerup",()=>dr=null);addEventListener("resize",lines);
+$("#bk").onclick=()=>{if(RES){RES=0;$("#res").innerHTML="";render();return}st--;show=0;say("");$("#res").innerHTML="";render()};
+$("#nx").onclick=()=>{const s0=st,sk=K();cnt=0;wl="";nxt();if(st==s0&&$("#msg").textContent){ERR+=cnt||1;LOG.push("Етап "+s0+" («"+SN[sk]+"»): "+(wl||$("#msg").textContent))}};
+function nxt(){say("");
+ if(K()=="tables"){if(lvl==3&&st==5&&!T.some(t=>/годув/.test(tn(t))))return say("Додайте таблицю для обліку годування (у назві має бути слово «годування»).");if(T.length<4||T.some(t=>!t.name.trim()))return say(lvl==2?"Дайте назву кожній із 4 таблиць.":"Для цієї бази потрібно щонайменше 4 таблиці з назвами. Які об'єкти описані в листі?")}
+ if(K()=="fields"){const left=FL.filter(f=>!f.table&&f.home);
+  if(left.length)return say(`Залишилось нерозподілених полів: ${left.length}. Якщо поле нікуди не підходить — додайте таблицю на етапі 1.`);
+  const nohome=FL.filter(f=>f.home&&!T.some(t=>f.home(tn(t))));
+  if(nohome.length)return say("Немає відповідної таблиці для полів: "+nohome.map(f=>f.name).join(", ")+". Поверніться й створіть чи перейменуйте таблицю.");
+  if(FL.some(f=>f.table&&!okPlace(f))){const w=FL.filter(f=>f.table&&!okPlace(f));cnt=w.length;wl="неправильні таблиці для полів: "+w.map(f=>f.name+" → «"+TNm(f)+"»").join(", ");show=1;render();return say("Червоні поля лежать не в тих таблицях або взагалі не потрібні замовнику. Перемістіть їх.")}}
+ const P=FL.filter(f=>f.table);if(K()=="types"){if(P.some(f=>!f.type))return say("Оберіть тип для кожного поля.");
+  if(P.some(f=>!f.types.includes(f.type)||f.key!=f.pk)){const w=P.filter(f=>!f.types.includes(f.type)||f.key!=f.pk);cnt=w.length;wl="неправильний тип чи ключ: "+w.map(f=>f.name+" ("+(f.types.includes(f.type)?"ключ":"тип «"+f.type+"»")+")").join(", ");show=1;render();return say("Червоні поля мають неправильний тип або ключ. Подумайте, які дії виконують із такими даними і яке поле однозначно ідентифікує запис.")}}
+ if(K()=="extra"){const E=FL.filter(f=>f.extra);
+ if(!T.some(t=>t.extra&&/годув/.test(tn(t))))return say("Додайте таблицю для обліку годування (у назві має бути слово «годування»).");
+ if(E.some(f=>!f.table))return say("Розподіліть усі нові поля по таблицях.");
+ if(E.some(f=>!f.type))return say("Оберіть тип для кожного нового поля.");
+ if(E.some(f=>!okPlace(f)||!f.types.includes(f.type)||f.key!=f.pk)){const w=E.filter(f=>!okPlace(f)||!f.types.includes(f.type)||f.key!=f.pk);cnt=w.length;wl="нові поля з помилками (таблиця, тип чи ключ): "+w.map(f=>f.name).join(", ");show=1;render();return say("Червоні поля мають неправильну таблицю, тип або ключ.")}
+ return final()}
+ if(K()=="rel"){if(lvl==3&&st==4){if(!baseOK())return say("Спершу завершіть основну схему: усі три зв'язки мають бути правильними, з правильним типом.");addExtra();st++;show=0;render();return}return final()}
+ st++;show=0;render()};
+function final(){const L=[],add=(o,t)=>L.push([o,t]);
+ const link=(a,b,o)=>R.some(r=>fid(r.from).name==a&&fid(r.to).name==b&&(o===undefined||!!r.one==o));
+ [["код_виду","вид_тварини","Види — Тварини",1],["код_вольєра","вольєр_тварини","Вольєри — Тварини",1],["код_працівника","доглядач_вольєра","Працівники — Вольєри",0],...(lvl==3?[["код_тварини","тварина_годування","Тварини — Годування",0],["код_працівника","працівник_годування","Працівники — Годування",0]]:[])].filter((_,i)=>lvl>1||i).forEach(([x,y,n,o])=>{add(link(x,y),n+": зв'язок "+x+" — "+y);if(lvl==3)add(link(x,y,!!o),n+": тип зв'язку "+(o?"1 : 1":"1 : ∞"))});
+ add(T.every(t=>R.some(r=>fid(r.from).table==t.id||fid(r.to).table==t.id)),"Жодна таблиця не залишилась без зв'язків");
+ add(R.length>0&&R.every(r=>{const a=fid(r.from).type,b=fid(r.to).type;return a==b||a=="Лічильник"&&b=="Зв'язок"}),"Ключ зв'язується з полем типу «Зв'язок»");
+ add(R.length==(lvl==1?2:lvl==3?5:3),"Немає зайвих зв'язків (потрібно рівно "+(lvl==1?2:lvl==3?5:3)+")");
+ const n=L.filter(x=>x[0]).length,p=Math.round(n/L.length*100);ERR+=L.length-n;L.filter(x=>!x[0]).forEach(x=>LOG.push("Фінальна перевірка: "+x[1]));
+ $("#res").innerHTML="<b>Відгук замовника</b>"+L.map(([o,t])=>`<div class="ck ${o?"ok":"no"}"><span>${o?"✔":"✖"}</span><span>${t}</span></div>`).join("")+`<p><b>Кількість помилок за все завдання: ${ERR}</b>${ERR==0?" 🌟 без жодної помилки!":""}<br><small>Враховано: неправильні поля, типи й ключі при переході далі, хибні спроби з'єднати таблиці та невиконані пункти цієї перевірки.</small></p><p><b>Виконано: ${n} з ${L.length} (${p}%).</b> ${p==100?"🎉 Проєкт прийнято! Схема БД зоопарку готова.":"Поверніться до схеми, виправте пункти з ✖ та здайте ще раз."}</p>`;SUM={L,n,p};outBlock();RES=1;render();scrollTo(0,0)}
+const TNm=f=>(T.find(t=>t.id==f.table)||{}).name;
+const errSum=()=>{const m={};LOG.forEach(x=>m[x]=(m[x]||0)+1);return Object.entries(m).map(([k,v])=>v>1?k+" (×"+v+")":k)};
+function buildCanvas(){const W=290,HH=32,RH=26,pd=24,G="#2f7d4f",mc=document.createElement("canvas").getContext("2d");
+ const tx=t=>t.x||0,ty=t=>t.y||0,th=t=>HH+Math.max(1,tf(t).length)*RH+6;
+ const mx=Math.max(0,...T.map(t=>tx(t)+W)),my=Math.max(0,...T.map(t=>ty(t)+th(t))),cw=Math.max(1000,mx+2*pd);
+ const A=[],B=[],lh=z=>Math.round(z*1.5);
+ const wr=(arr,t,z,b,c)=>{mc.font=(b?"bold ":"")+z+"px system-ui,Arial,sans-serif";let ln="";String(t).split(" ").forEach(w=>{const q=ln?ln+" "+w:w;if(mc.measureText(q).width>cw-2*pd&&ln){arr.push([ln,z,b,c]);ln=w}else ln=q});arr.push([ln,z,b,c])};
+ const D="#1f2a24",date=new Date().toLocaleDateString("uk-UA");
+ wr(A,"Підсумок проєкту: база даних зоопарку «Дикий світ»",22,1,G);wr(A,"Учень: "+ME.sn+" "+ME.fn+", клас "+ME.cl,17,1,D);wr(A,"Рівень: "+LV[lvl]+" (максимум "+PT[lvl]+" балів)     Дата: "+date,15,0,D);
+ wr(A,"Виконано: "+SUM.n+" з "+SUM.L.length+" ("+SUM.p+"%)     Кількість помилок: "+ERR,17,1,D);
+ wr(B,"Відгук замовника",17,1,G);SUM.L.forEach(([o,t])=>wr(B,(o?"✔ ":"✖ ")+t,15,0,o?G:"#c0392b"));
+ wr(B," ",10,0,D);wr(B,"Допущені помилки ("+ERR+")",17,1,G);
+ const es=errSum();if(es.length)es.forEach(x=>wr(B,"• "+x,14,0,"#c0392b"));else wr(B,"Помилок не було!",15,0,G);
+ const sum=a=>a.reduce((q,x)=>q+lh(x[1]),0),h=pd+sum(A)+lh(17)+my+14+sum(B)+pd;
+ const c=document.createElement("canvas");c.width=cw;c.height=h;const g=c.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,cw,h);let y=pd;
+ const dr=a=>a.forEach(([t,z,b,col])=>{y+=lh(z);g.font=(b?"bold ":"")+z+"px system-ui,Arial,sans-serif";g.fillStyle=col;g.fillText(t,pd,y-z*.35)});
+ dr(A);dr([["Схема бази даних",17,1,G]]);const ox=pd,oy=y+6;
+ g.lineWidth=2;g.strokeStyle=G;g.font="bold 14px system-ui,Arial,sans-serif";
+ R.forEach(r=>{const fa=fid(r.from),fb=fid(r.to),ta=T.find(t=>t.id==fa.table),tb=T.find(t=>t.id==fb.table);if(!ta||!tb)return;
+  const s=tx(ta)<tx(tb)?1:-1,x1=ox+tx(ta)+(s>0?W:0),x2=ox+tx(tb)+(s>0?0:W),y1=oy+ty(ta)+HH+tf(ta).indexOf(fa)*RH+RH/2,y2=oy+ty(tb)+HH+tf(tb).indexOf(fb)*RH+RH/2,k=Math.max(40,Math.abs(x2-x1)/2);
+  g.beginPath();g.moveTo(x1,y1);g.bezierCurveTo(x1+s*k,y1,x2-s*k,y2,x2,y2);g.stroke();g.fillStyle=D;g.fillText("1",x1+s*14-4,y1-6);g.fillText(r.one?"1":"∞",x2-s*14-4,y2-6)});
+ T.forEach(t=>{const X=ox+tx(t),Y=oy+ty(t),H=th(t);g.fillStyle="#fff";g.fillRect(X,Y,W,H);g.fillStyle="#e3f1e7";g.fillRect(X,Y,W,HH);g.strokeStyle=G;g.lineWidth=2;g.strokeRect(X,Y,W,H);
+  g.fillStyle=D;g.font="bold 15px system-ui,Arial,sans-serif";g.fillText(t.name,X+10,Y+21);
+  tf(t).forEach((f,i)=>{const ry=Y+HH+i*RH+17;g.font=(f.key?"bold ":"")+"14px system-ui,Arial,sans-serif";g.fillStyle=D;g.fillText((f.key?"(ключ) ":"")+f.name,X+10,ry);g.font="13px system-ui,Arial,sans-serif";g.fillStyle="#6b776f";g.textAlign="right";g.fillText(f.type,X+W-8,ry);g.textAlign="left"})});
+ y=oy+my+14-6;dr(B);return c}
+function outBlock(){const c=buildCanvas();$("#res").insertAdjacentHTML("afterbegin",`<p>👤 <b>${esc(ME.sn)} ${esc(ME.fn)}</b>, ${esc(ME.cl)} · рівень «${LV[lvl]}»</p>`+(errSum().length?"<details><summary>Допущені помилки ("+ERR+")</summary><ul>"+errSum().map(x=>"<li>"+esc(x)+"</li>").join("")+"</ul></details>":""));
+ $("#res").insertAdjacentHTML("beforeend",`<div class="bar" style="margin-top:10px"><button id="sv">🖼 Зберегти як зображення</button><button id="snd">📤 Надіслати вчителю</button></div><div id="sm" style="font-size:14px;color:var(--mu)">Натисніть «Надіслати вчителю», щоб результат потрапив до вчителя. Зображення можна додатково зберегти собі.</div><img id="pv" alt="Підсумок проєкту" src="${c.toDataURL("image/png")}">`)}
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycby5JuoBDhkyMaeFKb3bjrhbHsIZIhM4f741IKFEZzoxtfYlNnycEXdbmtxjUtl1QQYyRw/exec",KEY="змініть-на-свій-ключ",TASK="БД зоопарку";
+
+async function sendRes(b,m){if(!SUM)return;
+
+const F={"Прізвище":ME.sn.trim(),"Ім'я":ME.fn.trim(),"Клас":ME.cl.trim(),"Рівень":LV[lvl],"Бали":Math.round(PT[lvl]*SUM.n/SUM.L.length*10)/10,"Макс. балів":PT[lvl],"Виконано пунктів":SUM.n+" з "+SUM.L.length+" ("+SUM.p+"%)","Кількість помилок":ERR,"Допущені помилки":errSum().join("\n")||"немає","Відгук замовника":SUM.L.map(([o,t])=>(o?"✔ ":"✖ ")+t).join("\n")};
+
+b.disabled=true;m.textContent="Надсилання…";
+
+try{await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({key:KEY,task:TASK,fields:F,image:{name:"zoo_db_"+ME.sn.trim()+"_"+ME.fn.trim()+".png",data:buildCanvas().toDataURL("image/png").split(",")[1]}})});m.textContent="Результат надіслано вчителю ✔"}
+
+catch(x){b.disabled=false;m.textContent="Не вдалося надіслати. Перевірте інтернет і спробуйте ще раз."}}
+
+$("#res").addEventListener("click",async e=>{const id=e.target.id,sm=()=>$("#sm");if(id=="snd"){sendRes(e.target,sm());return}
+ if(id=="sv"){try{const c=buildCanvas(),blob=await new Promise(r=>c.toBlob(r,"image/png")),d=window.claude?await claude.use("downloads"):null;if(!d){const u=URL.createObjectURL(blob),l=document.createElement("a");l.href=u;l.download="zoo_db_"+(ME.sn+"_"+ME.fn).replace(/[^\p{L}\p{N}_-]+/gu,"_")+".png";document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);sm().textContent="Зображення збережено у папку завантажень ✔";return}
+   await d.save({filename:"zoo_db_"+(ME.sn+"_"+ME.fn).replace(/[^\p{L}\p{N}_-]+/gu,"_")+".png",data:blob});sm().textContent="Зображення збережено ✔"}
+  catch(x){sm().textContent=x&&x.code=="declined"?"Збереження скасовано.":"Пряме збереження недоступне: збережіть картинку нижче (довге торкання або права кнопка миші → «Зберегти зображення»)."}}
+});
+let lvT;$("#lv").onclick=()=>{const b=$("#lv");if(b.dataset.c){clearTimeout(lvT);b.dataset.c="";b.textContent="⟲ Рівні";RES=0;lvl=0;say("");$("#res").innerHTML="";render();return}b.dataset.c=1;b.textContent="Прогрес буде втрачено — натисніть ще раз";lvT=setTimeout(()=>{b.dataset.c="";b.textContent="⟲ Рівні"},4000)};
+render();
+</script></body></html>
